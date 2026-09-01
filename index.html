@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Journey | Happy Birthday</title>
+    <!-- Google Fonts: Modern & Heartfelt -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;700&family=Playfair+Display:italic,wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* 2025 Color Palette: Midnight & Rose Gold */
+            --bg-deep: #050508;
+            --accent-gold: #e2b07e;
+            --accent-pink: #ff7eb3;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #e0e0e0;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+            --font-title: 'Playfair Display', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* Custom cursor implementation below */
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- Custom Interactive Cursor --- */
+        #cursor {
+            width: 20px;
+            height: 20px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+            mix-blend-mode: difference;
+        }
+
+        #cursor-follower {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--accent-gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transition: transform 0.2s ease, width 0.3s, height 0.3s;
+        }
+
+        /* --- Background Particles --- */
+        #canvas-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        /* --- Sections & Layout --- */
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 5vw;
+            position: relative;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-family: var(--font-title);
+            font-size: clamp(3rem, 10vw, 8rem);
+            background: linear-gradient(to right, var(--accent-gold), #fff, var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1.5s forwards 0.5s;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeIn 2s forwards 1s;
+        }
+
+        /* --- Scroll-Driven Memories --- */
+        .memories-container {
+            display: grid;
+            gap: 4rem;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .memory-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            padding: 2.5rem;
+            border-radius: 24px;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* View-driven animation (2025 standard) */
+            view-timeline-name: --card;
+            view-timeline-axis: block;
+            animation-timeline: --card;
+            animation-name: cardReveal;
+            animation-range: entry 10% cover 40%;
+            animation-fill-mode: both;
+        }
+
+        .memory-card:nth-child(even) { flex-direction: row-reverse; }
+
+        .memory-img {
+            width: 300px;
+            height: 200px;
+            background: #1a1a1a;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #444;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* --- The "Gift" Interactive Section --- */
+        .gift-box {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .gift-box:hover { transform: scale(1.1) rotate(5deg); }
+
+        .gift-lid {
+            background: var(--accent-gold);
+            height: 30px;
+            width: 100%;
+            border-radius: 5px;
+            position: absolute;
+            top: 0;
+            z-index: 2;
+            transition: transform 0.5s;
+        }
+
+        .gift-body {
+            background: var(--accent-gold);
+            height: 100px;
+            width: 100%;
+            border-radius: 0 0 5px 5px;
+            position: absolute;
+            bottom: 0;
+            filter: brightness(0.9);
+        }
+
+        .gift-box.open .gift-lid { transform: translateY(-50px) rotate(-15deg); opacity: 0; }
+
+        /* --- Hidden Message Reveal --- */
+        #final-wish {
+            display: none;
+            text-align: center;
+            max-width: 600px;
+            animation: zoomIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #final-wish h2 {
+            font-family: var(--font-title);
+            font-size: 3.5rem;
+            color: var(--accent-pink);
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- Keyframes --- */
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes cardReveal {
+            from { opacity: 0; transform: translateY(100px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .memory-card { flex-direction: column !important; text-align: center; }
+            .memory-img { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dynamic Elements -->
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
+    <canvas id="canvas-particles"></canvas>
+
+    <!-- 1. Hero Section -->
+    <section class="hero">
+        <p>A Special Greeting For</p>
+        <h1 id="bday-name">Someone Special</h1>
+        <div style="margin-top: 2rem; color: var(--accent-gold); animation: fadeIn 3s infinite alternate;">
+            Scroll to begin the journey ↓
+        </div>
+    </section>
+
+    <!-- 2. The Journey (Memories) -->
+    <section>
+        <div class="memories-container">
+            <div class="memory-card">
+                <div class="memory-img">[ Photo 1: Where it began ]</div>
+                <div>
+                    <h3>The First Moment</h3>
+                    <p>Thinking back to when we first met. There was a sparkle in the air that I couldn't quite explain, but I knew then that you were going to be significant.</p>
+                </div>
+            </div>
+            
+            <div class="memory-card">
+                <div class="memory-img">[ Photo 2: Best Memory ]</div>
+                <div>
+                    <h3>Unforgettable Smiles</h3>
+                    <p>Every laugh we've shared is a memory I keep locked away. You have this way of making the world feel quiet and perfect just by being in it.</p>
+                </div>
+            </div>
+
+            <div class="memory-card">
+                <div class="memory-img">[ Photo 3: Today ]</div>
+                <div>
+                    <h3>Why Today Matters</h3>
+                    <p>Because the world became a much brighter, kinder place exactly on this day. You are the kind of magic people write poems about.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. The Interactive Climax -->
+    <section id="climax">
+        <div id="gift-interaction">
+            <h3 style="margin-bottom: 2rem; letter-spacing: 2px;">YOUR BIRTHDAY SURPRISE</h3>
+            <div class="gift-box" onclick="openGift()">
+                <div class="gift-lid"></div>
+                <div class="gift-body"></div>
+            </div>
+            <p style="margin-top: 1.5rem; opacity: 0.6;">Tap the box to open</p>
+        </div>
+
+        <div id="final-wish">
+            <h2>Happy Birthday!</h2>
+            <p>May your year be as extraordinary as you are. You deserve all the love, peace, and adventure the universe can offer. Thank you for being you.</p>
+            <p style="margin-top: 2rem; font-style: italic; color: var(--accent-gold);">— With all my heart</p>
+        </div>
+    </section>
+
+    <script>
+        // 1. Custom Cursor Logic
+        const cursor = document.getElementById('cursor');
+        const follower = document.getElementById('cursor-follower');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            // Lagging effect for follower
+            setTimeout(() => {
+                follower.style.left = e.clientX - 10 + 'px';
+                follower.style.top = e.clientY - 10 + 'px';
+            }, 50);
+        });
+
+        // Hover effect for interactive elements
+        document.querySelectorAll('button, .gift-box, a').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                follower.style.width = '70px';
+                follower.style.height = '70px';
+                follower.style.transform = 'translate(-15px, -15px)';
+            });
+            el.addEventListener('mouseleave', () => {
+                follower.style.width = '40px';
+                follower.style.height = '40px';
+                follower.style.transform = 'translate(0, 0)';
+            });
+        });
+
+        // 2. High-Performance Particle System (Canvas)
+        const canvas = document.getElementById('canvas-particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = rgba(226, 176, 126, ${this.opacity});
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        animate();
+
+        // 3. Interactive Gift Reveal
+        function openGift() {
+            const box = document.querySelector('.gift-box');
+            const interactionArea = document.getElementById('gift-interaction');
+            const finalWish = document.getElementById('final-wish');
+            
+            box.classList.add('open');
+            
+            // 2025 "Pop" effect logic
+            setTimeout(() => {
+                interactionArea.style.display = 'none';
+                finalWish.style.display = 'block';
+                createConfetti();
+            }, 600);
+        }
+
+        // Special "Heart" Confetti for the end
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const p = new Particle();
+                    p.x = window.innerWidth / 2;
+                    p.y = window.innerHeight / 2;
+                    p.speedX = (Math.random() - 0.5) * 15;
+                    p.speedY = (Math.random() - 0.5) * 15;
+                    p.size = Math.random() * 5 + 2;
+                    p.opacity = 1;
+                    particles.push(p);
+                }, i * 20);
+            }
+        }
+    </script>
+</body>
+</html>
